@@ -1,0 +1,49 @@
+➡️ Conteneur
+- Instance isolee d'une application packagee avec ses dependances 
+- Legers et ephemeres
+
+➡️ Image 
+- Modele immuable utilise pour creer des conteneurs (comme template)
+- On construit des images avec un Dockerfile
+
+➡️ Dockerfile 
+- fichier texte qui decrit les etapes pour construire une image
+
+➡️ Volume 
+- stockage persistant attache a un conteneur (pour bases de donnees, fichiers uploads, etc)
+
+➡️ Reseau Docker
+- permet la communication entre conteneurs
+
+➡️ docker-compose
+- outil pour definir et lancer des multi-conteneurs via un fichier docker-compose.yml
+
+➡️ Entrypoint / commande
+- scripts ou commandes executees au demarrage du conteneur
+
+➡️ Reseau & HTTP
+- DNS / DOMAIN_NAME
+nom de domaine pointant vers l'IP du serveur -> utilise pour les certificats
+TLS et la configuration nginx
+
+- Reverse proxy (ex: nginx)
+serveur frontal qui redirige les requetes HTTP/HTTPS vers les conteneurs backend
+
+- Port mapping
+liaison entre port de la machine hote et port du conteneur
+
+- HTTPS = HTTP securise via TLS
+
+➡️ Nginx
+- server_name -> declare le domaine gere par un bloc serveur
+- location -> bloc pour matcher une route et configurer le comportement
+- upstream -> declare un groupe de backends
+
+➡️ Base de donnees
+- MariaDB / MySQL -> serveur de base de donnees relationnelle
+
+➡️ wordpress
+- outil en ligne de commande pour administrer WordPress
+
+➡️ fichiers d'environnement
+
