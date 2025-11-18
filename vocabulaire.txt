@@ -34,6 +34,10 @@ liaison entre port de la machine hote et port du conteneur
 
 - HTTPS = HTTP securise via TLS
 
+➡️ Mariadb 
+- c'est un systeme de gestion de base de donnees relationnelle open-source
+pour Wordpress (dans inception)
+
 ➡️ Nginx
 - server_name -> declare le domaine gere par un bloc serveur
 - location -> bloc pour matcher une route et configurer le comportement

@@ -1,0 +1,5 @@
+services:
+
+  mariadb:
+    build: ./requirements/mariadb #build from local dockerfile
+    
