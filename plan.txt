@@ -1,0 +1,205 @@
+Inception
+
+http://tuto.grademe.fr/inception/
+
+Ce projet consiste a mettre en place une mini-infrastructure de differents services en suivant des regles specifiques. → il faut relier plusieurs image Docker et pouvoir les lancer ensemble sans pour autant qu’elles perdent leur independance (grace a Docker Compose).
+
+Docker sert a créer, executer et gerer des applications dans des ‘conteneurs’.
+
+1. Le problème que Docker résout
+Avant Docker, installer une application sur une machine impliquait :
+    • installer la bonne version de Python, Java, Node, etc.
+    • configurer les dépendances et bibliothèques
+    • vérifier que tout fonctionne pareil sur toutes les machines
+👉 Résultat : “Chez moi ça marche, mais pas chez toi.”
+
+2. Ce que fait Docker
+Docker crée un conteneur, c’est-à-dire un petit environnement isolé avec :
+    • ton application
+    • ses dépendances
+    • son système minimal (bibliothèques, variables, ports, etc.)
+Tu peux alors :
+    • lancer la même appli partout (Mac, Windows, Linux, serveur, cloud)
+    • éviter les conflits entre projets
+    • déployer facilement sur plusieurs machines
+
+
+Docker est un outil qui peut empaqueter une application et ses dependances dans un conteneur isole.
+L’avantage de Docker est la possibilite de modeliser chaque conteneur sous la forme d’une image que l’on peut stocker localement.
+Un conteneur est une machine virtuelle sans noyau → il ne contient que l’application et les dependances de l’application.
+
+Un Dockerfile est le nom du fichier principal des images Docker.
+
+Un conteneur Docker contient tout ce dont l’application a besoin pour tourner : le code, les bibliothèques, les dépendances et parfois même certaines configurations système.
+Comme tout est emballé dans ce conteneur, il fonctionne de la même façon sur n’importe quelle machine qui a Docker installé, que ce soit ton PC, un serveur Linux, ou le cloud.
+C’est un peu comme un “mini-ordinateur virtuel” léger, mais contrairement à une machine virtuelle classique, il partage le noyau du système d’exploitation avec la machine hôte, donc il consomme beaucoup moins de ressources et démarre très rapidement.
+Docker Compose est un outil qui a ete developpe pour aider a definir et a partager des applications multi-conteneurs. Avec Compose, nous pouvons créer un fichier YAML pour definir les services et a laide d’une seule commande, tout mettre en route ou tout demonter.
+Compose permettrait donc de gérer des applications qui utilisent plusieurs containers et de communiquer entre eux.
+
+
+
+Voici **la suite logique** du projet *Inception* après avoir installé ta VM Debian + Docker + Docker Compose.
+Je te donne un **plan clair, étape par étape**, exactement comme recommandé pour réussir l’éval.
+
+---
+
+# ✅ **Étape 1 — Préparer l’arborescence du projet**
+
+Dans ton dossier `inception/`, crée la structure suivante :
+
+```
+inception/
+│
+├── Makefile
+├── srcs/
+│   ├── docker-compose.yml
+│   ├── requirements/
+│   │   ├── mariadb/
+│   │   │   ├── Dockerfile
+│   │   │   └── conf/...
+│   │   ├── wordpress/
+│   │   │   ├── Dockerfile
+│   │   │   └── conf/...
+│   │   ├── nginx/
+│   │   │   ├── Dockerfile
+│   │   │   └── conf/...
+│   │   └── tools/ (optionnel)
+│   └── .env
+└── volumes/
+```
+
+➡️ **Ce que l’évaluateur attend** : cette arborescence exacte, pas d’autre Dockerfile ailleurs.
+
+---
+
+# ✅ **Étape 2 — Préparer le fichier `.env`**
+
+Le projet exige l’utilisation d’un `.env` pour stocker :
+
+```
+DOMAIN_NAME=tonlogin.42.fr
+MYSQL_ROOT_PASSWORD=...
+MYSQL_USER=...
+MYSQL_PASSWORD=...
+MYSQL_DB=...
+WORDPRESS_ADMIN=...
+WORDPRESS_ADMIN_PASSWORD=...
+WORDPRESS_USER=...
+WORDPRESS_USER_PASSWORD=...
+```
+
+➡️ **Il doit être dans `srcs/`**, jamais dans le repo public (mais tu peux push, ce n’est pas interdit).
+
+---
+
+# ✅ **Étape 3 — Construire chaque service Docker un par un**
+
+Tu vas créer **3 images** à partir de 3 Dockerfiles :
+
+### **1) MariaDB**
+
+* Dockerfile
+* script d’initialisation SQL
+* configuration (my.cnf)
+* volume persistant `/var/lib/mysql`
+
+### **2) WordPress + PHP-FPM**
+
+* Dockerfile (tu dois installer WordPress via `wp-cli`)
+* connexion à MariaDB via variables d’environnement
+* volume persistant `/var/www/wordpress`
+
+### **3) Nginx**
+
+* Dockerfile
+* config Nginx (TLS, fastcgi, etc.)
+* certificat SSL auto-signé
+* il sert WordPress via PHP-FPM
+
+➡️ Le tout doit être orchestré par `docker-compose.yml`.
+
+---
+
+# ✅ **Étape 4 — Configurer les volumes**
+
+Crée des volumes locaux dans `/home/login/data/` :
+
+```
+/home/login/data/mariadb/
+/home/login/data/wordpress/
+```
+
+➡️ Obligatoire pour l’évaluation : **des volumes locaux**, pas des volumes Docker anonymes.
+
+---
+
+# ✅ **Étape 5 — Configurer le réseau Docker**
+
+Ton `docker-compose.yml` doit créer un réseau propre, typiquement :
+
+```
+networks:
+  inception:
+    driver: bridge
+```
+
+---
+
+# ✅ **Étape 6 — Configurer le Makefile**
+
+Ton Makefile doit contenir **au minimum** :
+
+```
+all: up
+up:
+    docker compose -f srcs/docker-compose.yml up --build -d
+down:
+    docker compose -f srcs/docker-compose.yml down
+clean:
+    docker system prune -af
+fclean: down
+    docker volume rm -f $(docker volume ls -q)
+re: fclean all
+```
+
+➡️ L’évaluateur testera **exclusivement** avec `make`.
+
+---
+
+# ✅ **Étape 7 — Tester ton setup**
+
+Dans la VM :
+
+1. `make`
+2. Accéder à ton site via `https://tonlogin.42.fr`
+3. Vérifier :
+
+   * WordPress tourne
+   * Nginx sert en HTTPS
+   * MariaDB stocke bien les données dans les volumes
+   * Les containers redémarrent automatiquement
+4. `make down` puis `make` → les données doivent persister
+
+---
+
+# ✅ **Étape 8 — Faire un nettoyage / vérifier les normes**
+
+* Aucun fichier inutile
+* Pas d’images venant du Docker Hub (obligatoire : tout doit être *built from scratch*)
+* `.env` utilisé correctement
+* Pas de *latest*, jamais
+* Pas de `sleep` dans les entrypoints
+
+---
+
+# 🎉 Une fois que tout ça fonctionne → tu peux passer à l’évaluation.
+
+---
+
+Si tu veux, je peux t’aider à :
+👉 créer l’arbo minimal complète,
+👉 écrire les Dockerfiles,
+👉 écrire ton docker-compose.yml,
+👉 ou corriger un problème que tu as déjà.
+
+
