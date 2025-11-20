@@ -3,10 +3,10 @@ services:
   mariadb:
     build: ./requirements/mariadb # build from local dockerfile
     container_name: mariadb
-    image: mariadb_custom
+    image: mariadb
     restart: always # auto-restart on failure
     env_file:
-      - template.env # load environment variables
+      - .env # load environment variables
     volumes:
       - mariadb_data:/var/lib/mysql # persistent database storage
     networks:
@@ -20,10 +20,10 @@ services:
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
-    image: wordpress_custom
+    image: wordpress
     restart: always
     env_file:
-      - template.env
+      - .env
     depends_on:
       mariadb:
         condition: service_healthy # wait until mariaddb is healthy
@@ -37,7 +37,7 @@ services:
   nginx:
     build: ./requirements/nginx
     container_name: nginx
-    image: nginx_custom
+    image: nginx
     restart: always
     ports:
       - "443:443" # sole port exposed to the outside world
