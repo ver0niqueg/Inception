@@ -10,7 +10,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql # persistent database storage
     networks:
-      - srcs_inception # private network
+      - inception # private network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
@@ -30,7 +30,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     networks:
-      - srcs_inception
+      - inception
     expose:
       - "9000" # nginx taks to wordpress via FPM (port 9000) no needs to bind the port to the machine
     
@@ -46,7 +46,7 @@ services:
     depends_on:
       - wordpress
     networks:
-      - srcs_inception
+      - inception
 
 volumes:
   mariadb_data:
@@ -64,5 +64,5 @@ volumes:
       o: bind
   
 networks:
-  src_inception:
+  inception:
     driver: bridge # use bridge network for isolation except exposed ports
