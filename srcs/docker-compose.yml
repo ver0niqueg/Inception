@@ -1,5 +1,69 @@
 services:
 
   mariadb:
-    build: ./requirements/mariadb #build from local dockerfile
+    build: ./requirements/mariadb # build from local dockerfile
+    container_name: mariadb
+    image: mariadb_custom
+    restart: always # auto-restart on failure
+    env_file:
+      - template.env # load environment variables
+    volumes:
+      - mariadb_data:/var/lib/mysql # persistent database storage
+    networks:
+      - inception # private network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    image: wordpress_custom
+    restart: always
+    env_file:
+      - template.env
+    depends_on:
+      mariadb:
+        condition: service_healthy # wait until mariaddb is healthy
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception
+    expose:
+      - "9000" # nginx taks to wordpress via FPM (port 9000) no needs to bind the port to the machine
     
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    image: nginx_custom
+    restart: always
+    ports:
+      - "443:443" # sole port exposed to the outside world
+    volumes:
+      - wordpress_data:/var/www/ht;l # access wordpress files
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+
+  volumes:
+    mariadb_data:
+      driver: local # local filesystem driver
+      driver_opts:
+        type: none # direct bind mount
+        device: /home/${USER}/data/mariadb # host directory
+        o: bind # bin mount option
+    
+    wordpress_data:
+      driver: local
+      driver_opts:
+        type: none
+        device: /home/${USER}/data/wordpress
+        o: bind
+  
+  networks:
+    inception:
+      driver: bridge # use bridge network for isolation except exposed ports
+      
