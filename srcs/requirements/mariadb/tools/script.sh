@@ -39,8 +39,9 @@ CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
 GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
+wait "$pid" # Attend que le processus mysqld se termine
 	mysqladmin -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown # Arrête la base de données qui avait été démarrée pour l'initialisation
-	wait "$pid" # Attend que le processus mysqld se termine
     chmod -R 755 /var/lib/mysql
 	touch /var/lib/mysql/.initialized # Crée le fichier .initialized pour indiquer que l'initialisation est terminée (flag)
 
+fi
