@@ -42,7 +42,7 @@ services:
     ports:
       - "443:443" # sole port exposed to the outside world
     volumes:
-      - wordpress_data:/var/www/ht;l # access wordpress files
+      - wordpress_data:/var/www/html # access wordpress files
     depends_on:
       - wordpress
     networks:
@@ -66,4 +66,3 @@ services:
   networks:
     inception:
       driver: bridge # use bridge network for isolation except exposed ports
-      
