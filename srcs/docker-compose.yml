@@ -64,5 +64,5 @@ volumes:
       o: bind
   
 networks:
-  inception:
+  src_inception:
     driver: bridge # use bridge network for isolation except exposed ports
