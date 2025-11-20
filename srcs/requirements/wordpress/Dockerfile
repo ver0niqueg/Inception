@@ -21,4 +21,4 @@ RUN chmod +x /usr/local/bin/init-wp.sh
 
 EXPOSE 9000
 
-ENTRYPOINT ["/usr/local/bin/init-wp.sh"]
+ENTRYPOINT ["/usr/local/bin/setup.sh"]
