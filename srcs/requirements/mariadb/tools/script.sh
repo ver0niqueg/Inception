@@ -13,7 +13,7 @@ if [ ! -d "/var/lib/mysql/mysql" ] || [ ! -f /var/lib/mysql/.initialized ]; then
 	pid="$!" # Récupère le PID du processus mysqld
 
 # Essaie de se connecter à la base de données toutes les secondes (30 secondes)
-	for i in {30..0}; do
+	for i in $(seq 30 -1 0); do
 		if mysqladmin ping --silent; then # Si la connexion réussit, la boucle s'arrête
 			break
 		fi
@@ -41,5 +41,6 @@ FLUSH PRIVILEGES;
 EOF
 	mysqladmin -uroot -p"${MYSQL_ROOT_PASSWORD}" shutdown # Arrête la base de données qui avait été démarrée pour l'initialisation
 	wait "$pid" # Attend que le processus mysqld se termine
+    chmod -R 755 /var/lib/mysql
 	touch /var/lib/mysql/.initialized # Crée le fichier .initialized pour indiquer que l'initialisation est terminée (flag)
 
