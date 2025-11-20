@@ -28,7 +28,7 @@ services:
       mariadb:
         condition: service_healthy # wait until mariaddb is healthy
     volumes:
-      - wordpress_data:/var/www/html
+      - srcs_wordpress_data:/var/www/html
     networks:
       - inception
     expose:
