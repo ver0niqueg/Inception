@@ -50,21 +50,21 @@ services:
     networks:
       - inception
 
-  volumes:
-    mariadb_data:
-      driver: local # local filesystem driver
-      driver_opts:
-        type: none # direct bind mount
-        device: /home/${USER}/data/mariadb # host directory
-        o: bind # bin mount option
+volumes:
+  mariadb_data:
+    driver: local # local filesystem driver
+    driver_opts:
+      type: none # direct bind mount
+      device: /home/${USER}/data/mariadb # host directory
+      o: bind # bin mount option
     
-    wordpress_data:
-      driver: local
-      driver_opts:
-        type: none
-        device: /home/${USER}/data/wordpress
-        o: bind
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/${USER}/data/wordpress
+      o: bind
   
-  networks:
-    inception:
-      driver: bridge # use bridge network for isolation except exposed ports
+networks:
+  inception:
+    driver: bridge # use bridge network for isolation except exposed ports
