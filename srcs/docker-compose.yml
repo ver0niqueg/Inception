@@ -7,6 +7,9 @@ services:
     restart: always # auto-restart on failure
     env_file:
       - .env # load environment variables
+    secrets:
+      - db_root_password
+      - db_password
     volumes:
       - mariadb_data:/var/lib/mysql # persistent database storage
     networks:
@@ -24,6 +27,9 @@ services:
     restart: always
     env_file:
       - .env
+    secrets:
+      - db_password
+      - wp_admin_password
     depends_on:
       mariadb:
         condition: service_healthy # wait until mariaddb is healthy
@@ -42,7 +48,10 @@ services:
     ports:
       - "443:443" # sole port exposed to the outside world
     volumes:
-      - wordpress_data:/var/www/html # access wordpress files
+      - wordpress_data:/var/www/html:ro # access wordpress files (read-only)
+    secrets:
+      - fullchain
+      - privkey
     depends_on:
       - wordpress
     networks:
@@ -53,16 +62,28 @@ volumes:
     driver: local # local filesystem driver
     driver_opts:
       type: none # direct bind mount
-      device: /home/${USER}/data/mariadb # host directory
+      device: /home/vgalmich/data/mariadb # host directory
       o: bind # bin mount option
     
   wordpress_data:
     driver: local
     driver_opts:
       type: none
-      device: /home/${USER}/data/wordpress
+      device: /home/vgalmich/data/wordpress
       o: bind
   
 networks:
   inception:
     driver: bridge # use bridge network for isolation except exposed ports
+
+secrets:
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+  fullchain:
+    file: ../secrets/fullchain.pem
+  privkey:
+    file: ../secrets/privkey.pem

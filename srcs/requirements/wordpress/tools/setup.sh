@@ -1,8 +1,20 @@
 #!/bin/bash
 
-set -e # Si une commande échoue, le script s'arrête immédiatement
+set -euo pipefail
 
-while ! mysqladmin ping -h"mariadb" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" --silent; do # Tant que la connexion à la base de données échoue, la boucle continue
+# Read secrets if present
+if [ -f /run/secrets/db_password ]; then
+	export MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+fi
+if [ -f /run/secrets/db_root_password ]; then
+	export MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+fi
+if [ -f /run/secrets/wp_admin_password ]; then
+	export WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
+fi
+
+# Wait until the database is reachable
+while ! mysqladmin ping -h"mariadb" -u"${MYSQL_USER}" ${MYSQL_PASSWORD:+-p"${MYSQL_PASSWORD}"} --silent; do
 	sleep 1
 done
 
@@ -14,7 +26,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 	wp config create \
 		--dbname="${MYSQL_DATABASE}" \
 		--dbuser="${MYSQL_USER}" \
-		--dbpass="${MYSQL_PASSWORD}" \
+		--dbpass="${MYSQL_PASSWORD:-}" \
 		--dbhost="mariadb" \
 		--allow-root
 
@@ -33,7 +45,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 		"${WP_USER}" \
 		"${WP_USER_EMAIL}" \
 		--role=editor \
-		--user_pass="${WP_USER_PASSWORD}" \
+		--user_pass="${WP_USER_PASSWORD:-userpass}" \
 		--allow-root
 fi
 
