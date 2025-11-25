@@ -1,14 +1,19 @@
+# MariaDB is an open-source relational database management system
+
+# pull base image
 FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y \
-	mariadb-server \
-	&& rm -rf /var/lib/apt/lists/*
+# update and upgrade the system
+RUN apt-get update && apt-get upgrade -y
 
-COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+# install the required packages
+RUN apt-get install -y mariadb-server netcat
 
-COPY tools/script.sh /usr/local/bin/script.sh
-RUN chmod +x /usr/local/bin/script.sh
+# copy file from host to container
+COPY ./mdb-init.sh /mdb-init.sh
 
-EXPOSE 3306
+#set permissions to the file
+RUN chmod +x /mdb-init.sh
 
-ENTRYPOINT ["/usr/local/bin/script.sh"]
+#define entrypoint command to run when the container starts
+ENTRYPOINT ["./mdb-init.sh"]
