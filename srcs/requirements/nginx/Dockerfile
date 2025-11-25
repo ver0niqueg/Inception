@@ -1,19 +1,29 @@
+# NGINX is a high performance, open-source web server and reverse proxy server software
+
+# pull base image
 FROM debian:bookworm
 
-RUN apt-get update && apt-get install -y \
-	nginx \
-	openssl \
-	&& rm -rf /var/lib/apt/lists/*
+# update and upgrade the system
+RUN apt-get update && apt-get upgrade -y
 
+# install the required packages
+RUN apt-get install -y nginx openssl
+
+# create the ssl directory
 RUN mkdir -p /etc/nginx/ssl
 
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-	-keyout /etc/nginx/ssl/inception.key \
-	-out /etc/nginx/ssl/inception.crt \
-	-subj "/C=FR/ST=IDF/L=Paris/O=42/CN=vgalmich.42.fr"
+# generate the ssl certificate
+RUN openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt -keyout \
+	/etc/nginx/ssl/inception.key -subj "/C=FR/ST=IDF/L=Paris/O=42/CN=vgalmich.42.fr/UID=vgalmich"
 
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+# copy the nginx configuration file
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 443
+# create the wordpress directory
+RUN mkdir -p /var/www/wordpress
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# change the owner of the wordpress directory to www-data
+RUN chown -R www-data:www-data /var/www/wordpress
+
+# define the command to run when the container starts
+CMD ["nginx", "-g", "daemon off;"]
