@@ -11,8 +11,6 @@ DATA_PATH = /home/vgalmich/data
 LOGIN = vgalmich
 
 all:
-				@cp ./srcs/template.env ./srcs/.env
-				@echo "$$HEADER"
 				@echo "\n $(GREEN)Starting Inception...$(DEFAULT)\n"
 				@mkdir -p $(DATA_PATH)/wordpress
 				@mkdir -p $(DATA_PATH)/mariadb
@@ -51,7 +49,6 @@ fclean:			down
 				@echo "🗑️ $(RED)Removing all containers, networks, images and volumes...$(DEFAULT)"
 				@docker system prune -af --volumes
 				@sudo rm -rf $(DATA_PATH)
-				@sudo rm -rf ./srcs/.env
 				@echo "✅ $(GREEN)Full clean completed$(DEFAULT)\n"
 
 re:			fclean all

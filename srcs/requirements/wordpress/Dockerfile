@@ -1,25 +1,19 @@
+# wordpress is an open-source content management system used to build and manage websites without needing to code
+
+# pull the base image
 FROM debian:bookworm
 
-ENV DEBIAN_FRONTEND=noninteractive
+# update and upgrade the system
+RUN apt-get update && apt-get upgrade -y
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      php8.2-fpm php8.2-mysql php8.2-xml php8.2-mbstring php8.2-curl php8.2-gd \
-      wget curl unzip ca-certificates mariadb-client procps && \
-    rm -rf /var/lib/apt/lists/*
+# install the required packages
+RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client
 
-# Install WP-CLI
-RUN wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O /usr/local/bin/wp && \
-    chmod +x /usr/local/bin/wp
+#copy the wordpress configuration script to the root directory in the container
+COPY ./wp_conf.sh
 
-WORKDIR /var/www/html
+# change the permission of the script to make it executable
+RUN chmod +x wp_conf.sh
 
-COPY tools/setup.sh /usr/local/bin/setup.sh
-RUN chmod +x /usr/local/bin/setup.sh
-
-VOLUME ["/var/www/html"]
-
-EXPOSE 9000
-
-ENTRYPOINT ["/usr/local/bin/setup.sh"]
-CMD ["php-fpm8.2", "-F"]
+# define the entrypoint command to run when the container starts
+ENTRYPOINT ["./wp_conf.sh"]

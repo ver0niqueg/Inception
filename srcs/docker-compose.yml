@@ -1,89 +1,69 @@
+version: "3.8"
+
 services:
 
   mariadb:
-    build: ./requirements/mariadb # build from local dockerfile
+    image: mariadb:user
     container_name: mariadb
-    image: mariadb
-    restart: always # auto-restart on failure
-    env_file:
-      - .env # load environment variables
-    secrets:
-      - db_root_password
-      - db_password
+    build: ./requirements/mariadb
     volumes:
-      - mariadb_data:/var/lib/mysql # persistent database storage
-    networks:
-      - inception # private network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  wordpress:
-    build: ./requirements/wordpress
-    container_name: wordpress
-    image: wordpress
-    restart: always
+      - mariadb:/var/lib/mysql
     env_file:
       - .env
-    secrets:
-      - db_password
-      - wp_admin_password
+    networks:
+      - inception
+    restart: always
+    healthcheck:
+      test: ["CMD", "nc", "-zv", "mariadb", "3306"]
+      intervals: 1s
+      timeout: 5s
+      retries: 10
+  
+  nginx:
+    image: nginx:user
+    container_name: mginx
+    build: ./requirements/nginx
+    ports:
+      - "443:443"
+    depends on:
+      - wordpress
+    volumes:
+      - wordpress:/var/www/wordpress
+    networks:
+      - inception
+    restart: always
+
+  wordpress:
+    image: wordpress:user
+    container_name: wordpress
+    build: ./requirements/wordpress
     depends_on:
       mariadb:
-        condition: service_healthy # wait until mariaddb is healthy
+        condition: service_healthy
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress:/var/www/wordpress
+    env_file:
+      - .env
     networks:
       - inception
-    expose:
-      - "9000" # nginx taks to wordpress via FPM (port 9000) no needs to bind the port to the machine
-    
-  nginx:
-    build: ./requirements/nginx
-    container_name: nginx
-    image: nginx
     restart: always
-    ports:
-      - "443:443" # sole port exposed to the outside world
-    volumes:
-      - wordpress_data:/var/www/html:ro # access wordpress files (read-only)
-    secrets:
-      - fullchain
-      - privkey
-    depends_on:
-      - wordpress
-    networks:
-      - inception
 
-volumes:
-  mariadb_data:
-    driver: local # local filesystem driver
-    driver_opts:
-      type: none # direct bind mount
-      device: /home/vgalmich/data/mariadb # host directory
-      o: bind # bin mount option
-    
-  wordpress_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/vgalmich/data/wordpress
-      o: bind
-  
-networks:
-  inception:
-    driver: bridge # use bridge network for isolation except exposed ports
+  volumes:
+    mariadb:
+      name: mariadb
+      driver: local
+      driver_opts:
+        device: /home/data/mariadb
+        o : bind
+        type : none
+    wordpress:
+      name: wordpress
+      driver: local
+      driver_opts:
+        device: /home/data/wordpress
+        o : bind
+        type : none
 
-secrets:
-  db_root_password:
-    file: ../secrets/db_root_password.txt
-  db_password:
-    file: ../secrets/db_password.txt
-  wp_admin_password:
-    file: ../secrets/wp_admin_password.txt
-  fullchain:
-    file: ../secrets/fullchain.pem
-  privkey:
-    file: ../secrets/privkey.pem
+  networks:
+    inception:
+      name: inception
