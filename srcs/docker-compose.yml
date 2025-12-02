@@ -1,16 +1,17 @@
 version: "3.8"
 
+# the services part
 services:
-
+#mariadb
   mariadb:
     image: mariadb:user
     container_name: mariadb
     build: ./requirements/mariadb
     volumes:
       - mariadb:/var/lib/mysql
-    env_file:
+    env_file :
       - .env
-    networks:
+    networks :
       - inception
     restart: always
     healthcheck:
@@ -18,10 +19,10 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
-  
+#nginx
   nginx:
     image: nginx:user
-    container_name: mginx
+    container_name: nginx
     build: ./requirements/nginx
     ports:
       - "443:443"
@@ -32,7 +33,7 @@ services:
     networks:
       - inception
     restart: always
-
+#wordpress
   wordpress:
     image: wordpress:user
     container_name: wordpress
@@ -42,28 +43,30 @@ services:
         condition: service_healthy
     volumes:
       - wordpress:/var/www/wordpress
-    env_file:
+    env_file :
       - .env
     networks:
       - inception
     restart: always
 
-  volumes:
-    mariadb:
-      name: mariadb
-      driver: local
-      driver_opts:
-        device: /home/data/mariadb
-        o : bind
-        type : none
-    wordpress:
-      name: wordpress
-      driver: local
-      driver_opts:
-        device: /home/data/wordpress
-        o : bind
-        type : none
+# the volumes part
+volumes:
+  mariadb:
+    name: mariadb
+    driver: local
+    driver_opts:
+      device: /home/data/mariadb
+      o : bind
+      type : none
+  wordpress:
+    name: wordpress
+    driver: local
+    driver_opts:
+      device: /home/data/wordpress
+      o : bind
+      type : none
 
-  networks:
-    inception:
-      name: inception
+# the networks part
+networks:
+  inception:
+    name: inception
