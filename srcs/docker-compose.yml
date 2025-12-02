@@ -15,7 +15,7 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "nc", "-zv", "mariadb", "3306"]
-      intervals: 1s
+      interval: 1s
       timeout: 5s
       retries: 10
   
