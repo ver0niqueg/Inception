@@ -7,13 +7,13 @@ FROM debian:bookworm
 RUN apt-get update && apt-get upgrade -y
 
 # install the required packages
-RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client
+RUN apt-get install -y curl php8.2-fpm php8.2-mysql mariadb-client
 
 #copy the wordpress configuration script to the root directory in the container
-COPY ./wp_conf.sh /
+COPY ./tools/wp_conf.sh /
 
 # change the permission of the script to make it executable
-RUN chmod +x wp_conf.sh
+RUN chmod +x /wp_conf.sh
 
 # define the entrypoint command to run when the container starts
-ENTRYPOINT ["./wp_conf.sh"]
+ENTRYPOINT ["/wp_conf.sh"]
