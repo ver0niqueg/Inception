@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Read secrets if available, otherwise use env variables
+if [ -f /run/secrets/db_password ]; then
+    MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+fi
+if [ -f /run/secrets/wp_admin_password ]; then
+    WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
+fi
+if [ -f /run/secrets/wp_user_password ]; then
+    WP_USER_PASSWORD=$(cat /run/secrets/wp_user_password)
+fi
+
 #--------------------wp installation--------------------#
 # wp-cli installation
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar

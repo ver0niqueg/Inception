@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Read secrets if available, otherwise use env variables
+if [ -f /run/secrets/db_root_password ]; then
+    MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+fi
+if [ -f /run/secrets/db_password ]; then
+    MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+fi
+
 #--------------mariadb start--------------#
 # start mariadb in background for initial config
 mysqld --user=mysql --datadir=/var/lib/mysql &
