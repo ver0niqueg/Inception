@@ -19,14 +19,21 @@ WP_USER_PASSWORD=${WP_USER_PASSWORD:-}
 
 echo "Waiting for MariaDB to be ready..."
 # Wait for MariaDB to be available
-for i in {1..30}; do
-    if mysqladmin ping -h mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent 2>/dev/null; then
+for i in {1..60}; do
+    if mysql -h mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT 1;" &>/dev/null; then
         echo "MariaDB is ready!"
         break
     fi
-    echo "Waiting for database... ($i/30)"
+    echo "Waiting for database... ($i/60)"
     sleep 2
 done
+
+# Final check
+if ! mysql -h mariadb -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "SELECT 1;" &>/dev/null; then
+    echo "ERROR: Could not connect to database after 120 seconds"
+    echo "Credentials: user=$MYSQL_USER db=$MYSQL_DATABASE host=mariadb"
+    exit 1
+fi
 
 #--------------------wp installation--------------------#
 # wp-cli installation
