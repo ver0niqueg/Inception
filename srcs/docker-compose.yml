@@ -9,6 +9,9 @@ services:
       - mariadb:/var/lib/mysql
     env_file :
       - .env
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_root_password
       - db_password
