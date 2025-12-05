@@ -16,10 +16,11 @@ services:
       - inception
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost --silent || exit 1"]
+      test: ["CMD", "nc", "-z", "localhost", "3306"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
 #nginx
   nginx:
     image: nginx:user
