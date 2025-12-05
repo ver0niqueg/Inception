@@ -4,15 +4,10 @@
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld
 
-# Initialize database if needed
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql
-fi
-
 #--------------mariadb start--------------#
 # start mariadb in background for initial config
 mysqld --user=mysql --datadir=/var/lib/mysql &
-sleep 10 # wait for mariadb to start
+sleep 5 # wait for mariadb to start
 
 #--------------mariadb config--------------#
 # create mariadb if not exists
