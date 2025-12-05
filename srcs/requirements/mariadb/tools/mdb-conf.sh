@@ -70,8 +70,11 @@ else
 fi
 
 #--------------mariadb restart---------------#
-# shutdown mariadb to restart with new config
-mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown
+# Stop the temporary MariaDB process
+echo "Stopping temporary MariaDB process..."
+kill "$pid"
+wait "$pid" 2>/dev/null || true
 
-# restart mariadb with new config in the foreground to keep the container running
+# Start MariaDB in the foreground to keep the container running
+echo "Starting MariaDB in production mode..."
 exec mysqld --user=mysql --bind-address=0.0.0.0 --port=3306
