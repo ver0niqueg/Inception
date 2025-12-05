@@ -30,17 +30,17 @@ fi
 
 # Start MariaDB in background for initial config
 echo "Starting MariaDB temporarily..."
-mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking &
+mysqld --user=mysql --datadir=/var/lib/mysql --skip-networking --socket=/run/mysqld/mysqld.sock &
 pid="$!"
 
 # Wait for MariaDB to be ready
 echo "Waiting for MariaDB to be ready..."
 for i in {30..0}; do
-    if mysqladmin ping --silent 2>/dev/null; then
+    if mysqladmin ping -S /run/mysqld/mysqld.sock --silent 2>/dev/null; then
         break
     fi
     echo "MariaDB is unavailable - sleeping"
-    sleep 1
+    sleep 2
 done
 
 if [ "$i" = 0 ]; then
@@ -52,27 +52,27 @@ echo "MariaDB is ready!"
 
 #--------------mariadb config--------------#
 # Only configure if not already done (check if our database exists)
-if ! mariadb -u root -e "USE \`${MYSQL_DATABASE}\`;" 2>/dev/null; then
+if ! mariadb -S /run/mysqld/mysqld.sock -u root -e "USE \`${MYSQL_DATABASE}\`;" 2>/dev/null; then
     echo "Configuring MariaDB..."
     
     # create database if not exists
-    mariadb -u root -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;"
     
     # create user if not exists
-    mariadb -u root -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
     
     # give privileges to user
-    mariadb -u root -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
     
     # Allow root from any host
-    mariadb -u root -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
-    mariadb -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;"
     
     # set root password for localhost
-    mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
     
     # flush privileges to apply changes
-    mariadb -u root -e "FLUSH PRIVILEGES;"
+    mariadb -S /run/mysqld/mysqld.sock -u root -e "FLUSH PRIVILEGES;"
     
     echo "MariaDB configured successfully!"
 else

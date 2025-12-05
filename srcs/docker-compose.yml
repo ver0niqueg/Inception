@@ -20,10 +20,10 @@ services:
     restart: always
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "3306"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 60s
 #nginx
   nginx:
     image: nginx:user
