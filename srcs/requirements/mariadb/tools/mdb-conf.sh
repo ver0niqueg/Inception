@@ -9,6 +9,12 @@ if [ -f /run/secrets/db_password ]; then
     MYSQL_PASSWORD=$(cat /run/secrets/db_password)
 fi
 
+# Fallback to env if secrets not present
+MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-}
+MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
+MYSQL_USER=${MYSQL_USER:-wpuser}
+
 #--------------prepare directories--------------#
 # Create required directories
 mkdir -p /run/mysqld

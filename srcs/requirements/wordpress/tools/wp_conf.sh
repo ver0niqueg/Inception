@@ -11,6 +11,11 @@ if [ -f /run/secrets/wp_user_password ]; then
     WP_USER_PASSWORD=$(cat /run/secrets/wp_user_password)
 fi
 
+# Fallback to env if secrets not present
+MYSQL_PASSWORD=${MYSQL_PASSWORD:-}
+WP_ADMIN_PASSWORD=${WP_ADMIN_PASSWORD:-}
+WP_USER_PASSWORD=${WP_USER_PASSWORD:-}
+
 #--------------------wp installation--------------------#
 # wp-cli installation
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
