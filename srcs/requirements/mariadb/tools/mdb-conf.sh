@@ -9,6 +9,12 @@ if [ -f /run/secrets/db_password ]; then
     MYSQL_PASSWORD=$(cat /run/secrets/db_password)
 fi
 
+#--------------prepare directories--------------#
+# Create required directories
+mkdir -p /run/mysqld
+chown -R mysql:mysql /run/mysqld
+chmod 755 /run/mysqld
+
 #--------------mariadb initialization--------------#
 # Check if database is already initialized
 if [ ! -d "/var/lib/mysql/mysql" ]; then
