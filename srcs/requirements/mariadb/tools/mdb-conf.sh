@@ -64,7 +64,11 @@ if ! mariadb -u root -e "USE \`${MYSQL_DATABASE}\`;" 2>/dev/null; then
     # give privileges to user
     mariadb -u root -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%';"
     
-    # set root password
+    # Allow root from any host
+    mariadb -u root -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
+    mariadb -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;"
+    
+    # set root password for localhost
     mariadb -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
     
     # flush privileges to apply changes
