@@ -3,11 +3,10 @@
 # pull base image
 FROM debian:bookworm
 
-# update and upgrade the system
-RUN apt-get update && apt-get upgrade -y
-
-# install the required packages
-RUN apt-get install -y mariadb-server netcat
+# update and install required packages in one layer
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y mariadb-server netcat-traditional && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy file from host to container
 COPY ./tools/mdb-conf.sh /mdb-conf.sh
