@@ -67,9 +67,16 @@ chown -R www-data:www-data /var/www/wordpress
 chmod -R 755 /var/www/wordpress
 
 #--------------------wp config--------------------#
-# change listen port from unix socket to 9000
-sed -i 's@/run/php/php8.2-fpm.sock@9000@' /etc/php/8.2/fpm/pool.d/www.conf
+# Configure PHP-FPM to listen on port 9000
+echo "Configuring PHP-FPM..."
+sed -i 's/listen = .*/listen = 9000/' /etc/php/8.2/fpm/pool.d/www.conf
+# Ensure PHP-FPM listens on all interfaces
+sed -i 's/;listen.owner/listen.owner/' /etc/php/8.2/fpm/pool.d/www.conf
+sed -i 's/;listen.group/listen.group/' /etc/php/8.2/fpm/pool.d/www.conf
+
 # create a directory for php-fpm
 mkdir -p /run/php
+
 # start php-fpm service in the foreground to keep the container running
+echo "Starting PHP-FPM..."
 /usr/sbin/php-fpm8.2 -F
