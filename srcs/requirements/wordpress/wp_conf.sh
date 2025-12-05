@@ -58,6 +58,16 @@ echo "✓ WordPress setup complete!"
 
 #--------------------wp config--------------------#
 # change listen port from unix socket to 9000
+echo "Configuring PHP-FPM..."
+sed -i 's@/run/php/php8.2-fpm.sock@9000@' /etc/php/8.2/fpm/pool.d/www.conf
+# create a directory for php-fpm
+mkdir -p /run/php
+# start php-fpm service in the foreground to keep the container running
+echo "Starting PHP-FPM..."
+/usr/sbin/php-fpm8.2 -F
+
+#--------------------wp config--------------------#
+# change listen port from unix socket to 9000
 sed -i 's@/run/php/php8.2-fpm.sock@9000@' /etc/php/8.2/fpm/pool.d/www.conf
 # create a directory for php-fpm
 mkdir -p /run/php
