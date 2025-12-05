@@ -9,7 +9,7 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy file from host to container
-COPY ./tools/mdb-conf.sh /mdb-conf.sh
+COPY ./mdb-conf.sh /mdb-conf.sh
 
 #set permissions to the file
 RUN chmod +x /mdb-conf.sh

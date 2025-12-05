@@ -9,21 +9,14 @@ services:
       - mariadb:/var/lib/mysql
     env_file :
       - .env
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
-    secrets:
-      - db_root_password
-      - db_password
     networks :
       - inception
     restart: always
     healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "3306"]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD", "nc", "-z", "mariadb", "3306"]
+      interval: 1s
+      timeout: 5s
       retries: 10
-      start_period: 60s
 #nginx
   nginx:
     image: nginx:user
@@ -50,10 +43,6 @@ services:
       - wordpress:/var/www/wordpress
     env_file :
       - .env
-    secrets:
-      - db_password
-      - wp_admin_password
-      - wp_user_password
     networks:
       - inception
     restart: always
@@ -79,14 +68,3 @@ volumes:
 networks:
   inception:
     name: inception
-
-# the secrets part
-secrets:
-  db_root_password:
-    file: /home/vgalmich/Documents/inception/secrets/db_root_password.txt
-  db_password:
-    file: /home/vgalmich/Documents/inception/secrets/db_password.txt
-  wp_admin_password:
-    file: /home/vgalmich/Documents/inception/secrets/wp_admin_password.txt
-  wp_user_password:
-    file: /home/vgalmich/Documents/inception/secrets/wp_user_password.txt
