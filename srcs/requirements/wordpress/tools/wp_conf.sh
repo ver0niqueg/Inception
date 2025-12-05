@@ -67,11 +67,17 @@ if ! wp core is-installed --allow-root 2>/dev/null; then
     # create a new user
     echo "Creating WordPress user..."
     wp user create "$WP_USER" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASSWORD" --role=editor --allow-root || true
+    
+    echo "WordPress installation complete!"
 fi
 
-# Set correct permissions
+# Set correct permissions AFTER installation
+echo "Setting correct permissions..."
+find /var/www/wordpress -type d -exec chmod 755 {} \;
+find /var/www/wordpress -type f -exec chmod 644 {} \;
 chown -R www-data:www-data /var/www/wordpress
-chmod -R 755 /var/www/wordpress
+
+echo "WordPress setup complete! Starting PHP-FPM..."
 
 #--------------------wp config--------------------#
 # Configure PHP-FPM to listen on port 9000
