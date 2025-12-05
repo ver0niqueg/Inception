@@ -1,34 +1,26 @@
 #!/bin/bash
-set -e
 
-echo "=== Starting MariaDB setup ==="
+#--------------mariadb start--------------#
+# start mariadb in background for initial config
+mysqld --user=mysql --datadir=/var/lib/mysql &
+sleep 5 # wait for mariadb to start
 
-# Create run directory for MariaDB
-mkdir -p /run/mysqld
-chown -R mysql:mysql /run/mysqld
+#--------------mariadb config--------------#
+# create mariadb if not exists
+mariadb -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DB}\`;"
 
-# Initialize database if not already done
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "Initializing MariaDB database..."
-    mysql_install_db --user=mysql --datadir=/var/lib/mysql
-    
-    echo "Configuring MariaDB with bootstrap mode..."
-    # Use bootstrap mode to configure database
-    cat << EOF | mysqld --user=mysql --bootstrap
-USE mysql;
-FLUSH PRIVILEGES;
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-CREATE DATABASE IF NOT EXISTS \`${MYSQL_DB}\`;
-CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL PRIVILEGES ON \`${MYSQL_DB}\`.* TO '${MYSQL_USER}'@'%';
-FLUSH PRIVILEGES;
-EOF
-    
-    echo "✓ MariaDB configured successfully!"
-else
-    echo "MariaDB already initialized, skipping setup..."
-fi
+# create user if not exists
+mariadb -e "CREATE USER IF NOT EXISTS \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
-# Start MariaDB
-echo "Starting MariaDB server..."
-exec mysqld --user=mysql --console
+# give privileges to user
+mariadb -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DB}\`.* TO \`${MYSQL_USER}\`@'%';"
+
+# flush privileges to apply changes
+mariadb -e "FLUSH PRIVILEGES;"
+
+#--------------mariadb restart---------------#
+# shutdown mariadb to restart with new config
+mysqladmin -u root -p${MYSQL_ROOT_PASSWORD} shutdown
+
+# restart mariadb with new config in the foreground to keep the container running
+mysqld_safe --port=3306 --bind-address=0.0.0.0 --datadir='/var/lib/mysql'
