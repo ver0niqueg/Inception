@@ -23,7 +23,7 @@ setup:
 					echo "$(GREEN)✅ Secrets directory already exists$(DEFAULT)"; \
 				fi
 
-all:
+all:			setup
 				@echo "\n $(GREEN)Starting Inception...$(DEFAULT)\n"
 				@mkdir -p $(DATA_PATH)/wordpress
 				@mkdir -p $(DATA_PATH)/mariadb
@@ -62,6 +62,7 @@ fclean:			down
 				@echo "🗑️ $(RED)Removing all containers, networks, images and volumes...$(DEFAULT)"
 				@docker system prune -af --volumes
 				@sudo rm -rf $(DATA_PATH)
+				@rm -rf secrets
 				@echo "✅ $(GREEN)Full clean completed$(DEFAULT)\n"
 
 re:			fclean all
