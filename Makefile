@@ -10,18 +10,17 @@ COMPOSE_FILE = ./srcs/docker-compose.yml
 DATA_PATH = /home/vgalmich/data
 LOGIN = vgalmich
 
-all:			
-				@if [ ! -d "secrets" ]; then \
-					echo "$(RED)Error: secrets directory not found!$(DEFAULT)"; \
-					echo "$(YELLOW)Please run 'make setup' first to create secrets.$(DEFAULT)"; \
-					exit 1; \
-				fi
-				@echo "\n $(GREEN)Starting Inception...$(DEFAULT)\n"
+all:
 				@mkdir -p $(DATA_PATH)/wordpress
 				@mkdir -p $(DATA_PATH)/mariadb
+				@if [ ! -d "secrets" ]; then \
+					echo "$(YELLOW)No secrets found. Creating them...$(DEFAULT)\n"; \
+					$(MAKE) setup; \
+				fi
+				@echo "\n$(GREEN)Starting Inception...$(DEFAULT)\n"
 				@cd srcs && docker compose up -d --build
-				@echo "\n✅ $(GREEN)Inception is running!$(DEFAULT)"
-				@echo "🌐 Visit: $(CYAN)https://$(LOGIN).42.fr$(DEFAULT)\n"
+				@echo "\n$(GREEN)Inception is running!$(DEFAULT)"
+				@echo "$(CYAN)Visit: https://$(LOGIN).42.fr$(DEFAULT)\n"
 
 setup:
 				@if [ ! -d "secrets" ]; then \
