@@ -13,10 +13,11 @@ services:
       - inception
     restart: always
     healthcheck:
-      test: ["CMD", "nc", "-z", "mariadb", "3306"]
-      interval: 1s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 2s
       timeout: 5s
       retries: 10
+      start_period: 10s
 #nginx
   nginx:
     image: nginx:user
