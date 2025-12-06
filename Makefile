@@ -23,7 +23,7 @@ setup:
 					echo "$(GREEN)✅ Secrets directory already exists$(DEFAULT)"; \
 				fi
 
-all:			setup
+all:			
 				@echo "\n $(GREEN)Starting Inception...$(DEFAULT)\n"
 				@mkdir -p $(DATA_PATH)/wordpress
 				@mkdir -p $(DATA_PATH)/mariadb
