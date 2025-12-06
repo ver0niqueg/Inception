@@ -16,6 +16,14 @@ chmod -R 755 /var/www/wordpress
 chown -R www-data:www-data /var/www/wordpress
 #--------------------wp installation--------------------#
 
+# wait for mariadb to be ready
+echo "Waiting for MariaDB to be ready..."
+until nc -z mariadb 3306; do
+  echo "MariaDB is unavailable - sleeping"
+  sleep 2
+done
+echo "MariaDB is up - continuing"
+
 # download wordpress core files
 wp core download --allow-root
 # create wp-config.php file with database details
