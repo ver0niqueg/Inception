@@ -13,7 +13,7 @@ RUN apt-get install -y curl php8.2-fpm php8.2-mysql mariadb-client
 RUN mkdir -p /var/www/wordpress && chown -R www-data:www-data /var/www/wordpress
 
 #copy the wordpress configuration script to the root directory in the container
-COPY ./wp_conf.sh /
+COPY ./tools/wp_conf.sh /
 
 # change the permission of the script to make it executable
 RUN chmod +x wp_conf.sh

@@ -9,8 +9,8 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # copy file from host to container
-COPY ./mdb-conf.sh /mdb-conf.sh
-COPY ./50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY ./tools/mdb-conf.sh /mdb-conf.sh
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
 #set permissions to the file
 RUN chmod +x /mdb-conf.sh
