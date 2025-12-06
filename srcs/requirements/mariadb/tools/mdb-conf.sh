@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Read passwords from Docker secrets
+MYSQL_PASSWORD=$(cat /run/secrets/db_password)
+MYSQL_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+
 # Create socket directory
 mkdir -p /run/mysqld
 chown -R mysql:mysql /run/mysqld

@@ -10,6 +10,19 @@ COMPOSE_FILE = ./srcs/docker-compose.yml
 DATA_PATH = /home/vgalmich/data
 LOGIN = vgalmich
 
+setup:
+				@if [ ! -d "secrets" ]; then \
+					echo "$(YELLOW)Creating secrets directory...$(DEFAULT)"; \
+					mkdir -p secrets; \
+					read -p "Enter database password: " db_pass; echo $$db_pass > secrets/db_password.txt; \
+					read -p "Enter database root password: " db_root_pass; echo $$db_root_pass > secrets/db_root_password.txt; \
+					read -p "Enter WordPress admin password: " wp_admin_pass; echo $$wp_admin_pass > secrets/wp_admin_password.txt; \
+					read -p "Enter WordPress user password: " wp_user_pass; echo $$wp_user_pass > secrets/wp_user_password.txt; \
+					echo "$(GREEN)✅ Secrets created!$(DEFAULT)"; \
+				else \
+					echo "$(GREEN)✅ Secrets directory already exists$(DEFAULT)"; \
+				fi
+
 all:
 				@echo "\n $(GREEN)Starting Inception...$(DEFAULT)\n"
 				@mkdir -p $(DATA_PATH)/wordpress
@@ -54,7 +67,8 @@ fclean:			down
 re:			fclean all
 
 help:
-				@echo "\n$(BLUE)all$(DEFAULT)\t\t- Build and start all services"
+				@echo "\n$(BLUE)setup$(DEFAULT)\t\t- Create secrets directory and files interactively"
+				@echo "$(BLUE)all$(DEFAULT)\t\t- Build and start all services"
 				@echo "$(BLUE)up$(DEFAULT)\t\t\t- Start all services"
 				@echo "$(BLUE)down$(DEFAULT)\t\t\t- Stop all services"
 				@echo "$(BLUE)stop$(DEFAULT)\t\t\t- Pause all services"
@@ -65,4 +79,4 @@ help:
 				@echo "$(BLUE)fclean$(DEFAULT)\t\t- Full cleanup (containers/networks/volumes/data)"
 				@echo "$(BLUE)re$(DEFAULT)\t\t\t- Rebuild everything from scratch\n"
 
-.PHONY:			all up down stop start status logs clean fclean re help
+.PHONY:			setup all up down stop start status logs clean fclean re help
