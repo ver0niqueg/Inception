@@ -12,7 +12,7 @@ LOGIN = vgalmich
 
 all:			
 				@if [ ! -d "secrets" ]; then \
-					echo "$(RED)❌ Error: secrets directory not found!$(DEFAULT)"; \
+					echo "$(RED)Error: secrets directory not found!$(DEFAULT)"; \
 					echo "$(YELLOW)Please run 'make setup' first to create secrets.$(DEFAULT)"; \
 					exit 1; \
 				fi
