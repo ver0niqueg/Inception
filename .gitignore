@@ -1,5 +1,2 @@
-# Secrets - NEVER commit passwords
 secrets/
-
-# Data directories - local Docker volumes
 data/
