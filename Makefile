@@ -3,7 +3,6 @@ RED				= \033[1;31m
 GREEN			= \033[1;32m
 YELLOW			= \033[1;33m
 BLUE			= \033[1;34m
-MAGENTA			= \033[1;35m
 CYAN			= \033[1;36m
 
 COMPOSE_FILE = ./srcs/docker-compose.yml
@@ -26,10 +25,10 @@ setup:
 				@if [ ! -d "secrets" ]; then \
 					echo "$(YELLOW)Creating secrets directory...$(DEFAULT)"; \
 					mkdir -p secrets; \
-					read -p "Enter database password: " db_pass; echo $$db_pass > secrets/db_password.txt; \
-					read -p "Enter database root password: " db_root_pass; echo $$db_root_pass > secrets/db_root_password.txt; \
-					read -p "Enter WordPress admin password: " wp_admin_pass; echo $$wp_admin_pass > secrets/wp_admin_password.txt; \
-					read -p "Enter WordPress user password: " wp_user_pass; echo $$wp_user_pass > secrets/wp_user_password.txt; \
+					read -s -p "Enter database password: " db_pass; echo $$db_pass > secrets/db_password.txt; echo ""; \
+					read -s -p "Enter database root password: " db_root_pass; echo $$db_root_pass > secrets/db_root_password.txt; echo ""; \
+					read -s -p "Enter WordPress admin password: " wp_admin_pass; echo $$wp_admin_pass > secrets/wp_admin_password.txt; echo ""; \
+					read -s -p "Enter WordPress user password: " wp_user_pass; echo $$wp_user_pass > secrets/wp_user_password.txt; echo ""; \
 					echo "$(GREEN)✅ Secrets created!$(DEFAULT)"; \
 				else \
 					echo "$(GREEN)✅ Secrets directory already exists$(DEFAULT)"; \
