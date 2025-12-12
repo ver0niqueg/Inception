@@ -25,10 +25,10 @@ setup:
 				@if [ ! -d "secrets" ]; then \
 					echo "$(YELLOW)Creating secrets directory...$(DEFAULT)"; \
 					mkdir -p secrets; \
-					read -s -p "Enter database password: " db_pass; echo $$db_pass > secrets/db_password.txt; echo ""; \
-					read -s -p "Enter database root password: " db_root_pass; echo $$db_root_pass > secrets/db_root_password.txt; echo ""; \
-					read -s -p "Enter WordPress admin password: " wp_admin_pass; echo $$wp_admin_pass > secrets/wp_admin_password.txt; echo ""; \
-					read -s -p "Enter WordPress user password: " wp_user_pass; echo $$wp_user_pass > secrets/wp_user_password.txt; echo ""; \
+					echo -n "Enter database password: "; read -s db_pass; echo $$db_pass > secrets/db_password.txt; echo ""; \
+					echo -n "Enter database root password: "; read -s db_root_pass; echo $$db_root_pass > secrets/db_root_password.txt; echo ""; \
+					echo -n "Enter WordPress admin password: "; read -s wp_admin_pass; echo $$wp_admin_pass > secrets/wp_admin_password.txt; echo ""; \
+					echo -n "Enter WordPress user password: "; read -s wp_user_pass; echo $$wp_user_pass > secrets/wp_user_password.txt; echo ""; \
 					echo "$(GREEN)✅ Secrets created!$(DEFAULT)"; \
 				else \
 					echo "$(GREEN)✅ Secrets directory already exists$(DEFAULT)"; \
