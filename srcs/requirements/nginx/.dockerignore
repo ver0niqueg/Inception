@@ -1,5 +1,2 @@
-.git
-.gitignore
-README.md
 *.md
-.dockerignore
+.git
