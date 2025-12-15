@@ -8,7 +8,7 @@ chown -R mysql:mysql /run/mysqld
 
 #--------------mariadb start--------------#
 mysqld --user=mysql --datadir=/var/lib/mysql &
-sleep 5 # wait for mariadb to start
+sleep 5
 
 #--------------mariadb config--------------#
 mariadb -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DB}\`;"

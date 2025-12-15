@@ -1,6 +1,4 @@
-# the services part
 services:
-#mariadb
   mariadb:
     image: mariadb:user
     container_name: mariadb
@@ -21,7 +19,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-#nginx
+
   nginx:
     image: nginx:user
     container_name: nginx
@@ -35,7 +33,7 @@ services:
     networks:
       - inception
     restart: always
-#wordpress
+
   wordpress:
     image: wordpress:user
     container_name: wordpress
@@ -55,7 +53,6 @@ services:
       - inception
     restart: always
 
-# the volumes part
 volumes:
   mariadb:
     name: mariadb
@@ -72,12 +69,10 @@ volumes:
       o : bind
       type : none
 
-# the networks part
 networks:
   inception:
     name: inception
 
-# the secrets part
 secrets:
   db_password:
     file: ../secrets/db_password.txt
